@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dotcomits.atlas_bank.model.Account;
 import com.dotcomits.atlas_bank.model.Transaction;
 import com.dotcomits.atlas_bank.service.AccountService;
+import com.dotcomits.atlas_bank.service.TransactionQueryService;
+import com.dotcomits.atlas_bank.service.TransferService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class AccountController {
 
     private final AccountService accountService;
+    private final TransferService transferService;
+    private final TransactionQueryService transactionQueryService;
 
     @PostMapping 
     public ResponseEntity<Account> create(@RequestBody Account account) {
@@ -45,12 +49,12 @@ public class AccountController {
 
     @PostMapping ("/transfer") 
     public ResponseEntity<Transaction> transfer(@RequestParam Long fromId, @RequestParam Long toId, @RequestParam BigDecimal amount) {
-        return ResponseEntity.ok(accountService.transfer(fromId, toId, amount));
+        return ResponseEntity.ok(transferService.excecute(fromId, toId, amount));
     }
 
     @GetMapping ("/{accountId}/transactions")
     public ResponseEntity<List<Transaction>> getTransactionsForAccount(@PathVariable Long accountId) {
-        List<Transaction> transactions = accountService.getTransactionsForAccount(accountId);
+        List<Transaction> transactions = transactionQueryService.getByAccountId(accountId);
         return ResponseEntity.ok(transactions);
     }
 }
