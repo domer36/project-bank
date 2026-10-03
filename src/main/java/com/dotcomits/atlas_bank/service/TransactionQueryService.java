@@ -11,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 
 @Service 
 @RequiredArgsConstructor 
-public class TransactionQueryService {
+public class TransactionQueryService implements ITransactionQueryService {
     private final TransactionRepository transactionRepository;
 
+    @Override
     public List<Transaction> getByAccountId(Long accountId) {
         return transactionRepository.findBySourceAccountIdOrTargetAccountId(accountId, accountId);
     }

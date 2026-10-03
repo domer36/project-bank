@@ -16,13 +16,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service 
 @RequiredArgsConstructor 
-public class TransferService {
+public class TransferService implements ITransferService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final List<FeeCalculator> feeCalculators;
 
+    @Override 
     @Transactional 
-    public Transaction excecute(Long fromId, Long toId, BigDecimal amount) {
+    public Transaction execute(Long fromId, Long toId, BigDecimal amount) {
         Account sourceAccount = accountRepository.findById(fromId)
             .orElseThrow(() -> new RuntimeException("Source account not found with id: " + fromId));
         Account targetAccount = accountRepository.findById(toId)
