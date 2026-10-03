@@ -1,6 +1,7 @@
 package com.dotcomits.atlas_bank.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import com.dotcomits.atlas_bank.model.Account;
 import com.dotcomits.atlas_bank.model.Transaction;
 import com.dotcomits.atlas_bank.repository.AccountRepository;
 import com.dotcomits.atlas_bank.repository.TransactionRepository;
+import com.dotcomits.atlas_bank.service.fee.FeeCalculator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class TransferService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final List<FeeCalculator> feeCalculators;
 
     @Transactional 
     public Transaction excecute(Long fromId, Long toId, BigDecimal amount) {
@@ -36,15 +39,11 @@ public class TransferService {
             throw new RuntimeException("Insufficient balance in source account");
         }
 
-        BigDecimal fee;
-
-        if ("SAVINGS".equals(sourceAccount.getType())) {
-            fee = amount.multiply(new BigDecimal("0.01"));
-        } else if ("CHECKING".equals(sourceAccount.getType())) {
-            fee = amount.multiply(new BigDecimal("0.015")); 
-        } else {
-            fee = BigDecimal.ZERO;
-        }
+        BigDecimal fee = feeCalculators.stream()
+            .filter(calculator -> calculator.supports(sourceAccount.getType()))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("No fee calculator found for transfer type: " + sourceAccount.getType()))
+            .calculateFee(amount);
 
         sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount).subtract(fee));
         targetAccount.setBalance(targetAccount.getBalance().add(amount));
