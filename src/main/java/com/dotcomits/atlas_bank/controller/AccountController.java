@@ -1,5 +1,6 @@
 package com.dotcomits.atlas_bank.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -8,9 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dotcomits.atlas_bank.model.Account;
+import com.dotcomits.atlas_bank.model.Transaction;
 import com.dotcomits.atlas_bank.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,5 +41,16 @@ public class AccountController {
     public ResponseEntity<Account> findById(@PathVariable Long id) {
         Account account = accountService.findById(id);
         return ResponseEntity.ok(account);
+    }
+
+    @PostMapping ("/transfer") 
+    public ResponseEntity<Transaction> transfer(@RequestParam Long fromId, @RequestParam Long toId, @RequestParam BigDecimal amount) {
+        return ResponseEntity.ok(accountService.transfer(fromId, toId, amount));
+    }
+
+    @GetMapping ("/{accountId}/transactions")
+    public ResponseEntity<List<Transaction>> getTransactionsForAccount(@PathVariable Long accountId) {
+        List<Transaction> transactions = accountService.getTransactionsForAccount(accountId);
+        return ResponseEntity.ok(transactions);
     }
 }
