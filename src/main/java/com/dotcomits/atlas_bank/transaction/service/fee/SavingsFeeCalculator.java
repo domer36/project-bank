@@ -1,19 +1,19 @@
-package com.dotcomits.atlas_bank.service.fee;
+package com.dotcomits.atlas_bank.transaction.service.fee;
 
 import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
 @Component 
-public class DefaultFeeCalculator implements FeeCalculator {
+public class SavingsFeeCalculator implements FeeCalculator {
     @Override
     public boolean supports(String transactionType) {
-        return true;
+        return "SAVINGS".equalsIgnoreCase(transactionType);
     }
 
     @Override
     public BigDecimal calculateFee(BigDecimal amount) {
-        return BigDecimal.ZERO; 
+        return amount.multiply(new BigDecimal("0.01"));
     }
 
 }

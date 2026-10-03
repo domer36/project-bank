@@ -1,7 +1,4 @@
-package com.dotcomits.atlas_bank.model;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+package com.dotcomits.atlas_bank.account.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,26 +9,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity 
 @Data 
 @NoArgsConstructor 
 @AllArgsConstructor 
-public class Transaction {
+public class Account {
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+    private String accountNumber;
+    private String ownerName;
+    private String email;
     private String type;
-    private Long sourceAccountId;
-    private Long targetAccountId;
-    private BigDecimal amount;
-    private BigDecimal fee;
+    private BigDecimal balance;
     private String status;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @PrePersist 
     public void prePersist() {
-        this.createAt = LocalDateTime.now();
-        if (status== null) status = "PENDING";
-        if (fee == null) fee = BigDecimal.ZERO;
+        this.createdAt = LocalDateTime.now();
+        if (status== null) status = "ACTIVE";
+        if (balance == null) balance = BigDecimal.ZERO;
     }
 }

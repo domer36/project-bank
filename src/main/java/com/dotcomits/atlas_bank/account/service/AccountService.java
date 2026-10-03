@@ -1,11 +1,11 @@
-package com.dotcomits.atlas_bank.service;
+package com.dotcomits.atlas_bank.account.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.dotcomits.atlas_bank.model.Account;
-import com.dotcomits.atlas_bank.repository.AccountRepository;
+import com.dotcomits.atlas_bank.account.model.Account;
+import com.dotcomits.atlas_bank.account.repository.AccountRepository;
 
 import lombok.RequiredArgsConstructor;
 
