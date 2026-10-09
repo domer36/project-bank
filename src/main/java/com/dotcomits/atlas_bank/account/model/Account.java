@@ -6,19 +6,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity 
-@Data 
+@Getter
+@Setter  
 @NoArgsConstructor 
-@AllArgsConstructor 
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) 
 public class Account {
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private String accountNumber;
     private String ownerName;

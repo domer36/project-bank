@@ -9,16 +9,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity 
-@Data 
+@Getter 
+@Setter 
 @NoArgsConstructor 
 @AllArgsConstructor 
+@EqualsAndHashCode 
 public class Transaction {
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private String type;
     private Long sourceAccountId;
