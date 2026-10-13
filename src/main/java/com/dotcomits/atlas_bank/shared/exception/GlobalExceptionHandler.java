@@ -1,0 +1,42 @@
+package com.dotcomits.atlas_bank.shared.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.dotcomits.atlas_bank.account.exception.AccountNotFoundException;
+import com.dotcomits.atlas_bank.transaction.exception.AccountNotActiveException;
+import com.dotcomits.atlas_bank.transaction.exception.InsufficientFundsException;
+
+@RestControllerAdvice 
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ProblemDetail handlerAccountNotFoundException(AccountNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Account Not Found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AccountNotActiveException.class)
+    public ProblemDetail handlerAccountNotActiveException(AccountNotActiveException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setTitle("Account Not Active");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ProblemDetail handlerInsufficientFundsException(InsufficientFundsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setTitle("Insufficient Funds");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handlerGenericException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        problemDetail.setTitle("Internal Server Error");
+        return problemDetail;
+    }
+}

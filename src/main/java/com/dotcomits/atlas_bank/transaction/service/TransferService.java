@@ -6,8 +6,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dotcomits.atlas_bank.account.exception.AccountNotFoundException;
 import com.dotcomits.atlas_bank.account.model.Account;
 import com.dotcomits.atlas_bank.account.repository.AccountRepository;
+import com.dotcomits.atlas_bank.transaction.exception.AccountNotActiveException;
+import com.dotcomits.atlas_bank.transaction.exception.InsufficientFundsException;
 import com.dotcomits.atlas_bank.transaction.model.Transaction;
 import com.dotcomits.atlas_bank.transaction.repository.TransactionRepository;
 import com.dotcomits.atlas_bank.transaction.service.fee.FeeCalculator;
@@ -25,19 +28,19 @@ public class TransferService implements ITransferService {
     @Transactional 
     public Transaction execute(Long fromId, Long toId, BigDecimal amount) {
         Account sourceAccount = accountRepository.findById(fromId)
-            .orElseThrow(() -> new RuntimeException("Source account not found with id: " + fromId));
+            .orElseThrow(() -> new AccountNotFoundException(fromId));
         Account targetAccount = accountRepository.findById(toId)
-            .orElseThrow(() -> new RuntimeException("Target account not found with id: " + toId));
+            .orElseThrow(() -> new AccountNotFoundException(toId));
 
         if (!"ACTIVE".equals(sourceAccount.getStatus())) {
-            throw new RuntimeException("Source account is not active");
+            throw new AccountNotActiveException(fromId, sourceAccount.getStatus());
         }
         if (!"ACTIVE".equals(targetAccount.getStatus())) {
-            throw new RuntimeException("Target account is not active");
+            throw new AccountNotActiveException(toId, targetAccount.getStatus());
         }
 
         if (sourceAccount.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Insufficient balance in source account");
+            throw new InsufficientFundsException(fromId, sourceAccount.getBalance(), amount);
         }
 
         BigDecimal fee = feeCalculators.stream()

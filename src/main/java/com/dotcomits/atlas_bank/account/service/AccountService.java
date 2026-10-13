@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dotcomits.atlas_bank.account.exception.AccountNotFoundException;
 import com.dotcomits.atlas_bank.account.model.Account;
 import com.dotcomits.atlas_bank.account.repository.AccountRepository;
 
@@ -27,7 +28,7 @@ public class AccountService implements IAccountService {
     @Override 
     public Account findById(Long id) {
         return accountRepository.findById(id).orElseThrow(
-            () -> new RuntimeException("Account not found with id: " + id)
+            () -> new AccountNotFoundException(id)
         );
     }
 
