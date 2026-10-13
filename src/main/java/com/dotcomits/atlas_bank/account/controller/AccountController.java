@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dotcomits.atlas_bank.account.dto.AccountMapper;
 import com.dotcomits.atlas_bank.account.dto.AccountResponse;
 import com.dotcomits.atlas_bank.account.dto.CreateAccountRequest;
 import com.dotcomits.atlas_bank.account.model.Account;
@@ -24,25 +25,21 @@ import lombok.RequiredArgsConstructor;
 public class AccountController {
 
     private final IAccountService accountService;
+    private final AccountMapper accountMapper;
 
     @PostMapping 
     public ResponseEntity<AccountResponse> create(@RequestBody CreateAccountRequest request) {
-        Account account = new Account();
-        account.setAccountNumber(request.getAccountNumber());
-        account.setOwnerName(request.getOwnerName());
-        account.setEmail(request.getEmail());
-        account.setType(request.getType());
-        account.setBalance(request.getBalance());
+        Account account = accountMapper.toEntity(request);
 
         Account createdAccount = accountService.create(account);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(createdAccount));
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountMapper.toResponse(createdAccount));
     }
 
     @GetMapping 
     public ResponseEntity<List<AccountResponse>> findAll() {
         List<AccountResponse> accountResponses = accountService.findAll()
             .stream()
-            .map(this::toResponse)
+            .map(accountMapper::toResponse)
             .toList();
         return ResponseEntity.status(HttpStatus.OK).body(accountResponses);
     }
@@ -50,19 +47,6 @@ public class AccountController {
     @GetMapping ("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable Long id) {
         Account account = accountService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(toResponse(account));
-    }
-
-    private AccountResponse toResponse(Account account) {
-        AccountResponse response = new AccountResponse();
-        response.setId(account.getId());
-        response.setAccountNumber(account.getAccountNumber());
-        response.setOwnerName(account.getOwnerName());
-        response.setEmail(account.getEmail());
-        response.setType(account.getType());
-        response.setBalance(account.getBalance());
-        response.setStatus(account.getStatus());
-        response.setCreatedAt(account.getCreatedAt());
-        return response;
+        return ResponseEntity.status(HttpStatus.OK).body(accountMapper.toResponse(account));
     }
 }

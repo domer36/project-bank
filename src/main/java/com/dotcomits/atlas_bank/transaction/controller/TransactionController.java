@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dotcomits.atlas_bank.transaction.dto.TransactionMapper;
 import com.dotcomits.atlas_bank.transaction.dto.TransactionRequest;
 import com.dotcomits.atlas_bank.transaction.dto.TransactionResponse;
 import com.dotcomits.atlas_bank.transaction.model.Transaction;
@@ -25,6 +26,7 @@ public class TransactionController {
 
     private final ITransferService transferService;
     private final ITransactionQueryService transactionQueryService;
+    private final TransactionMapper transactionMapper;
 
     @PostMapping ("/transfer") 
     public ResponseEntity<TransactionResponse> transfer(@RequestBody TransactionRequest request) {
@@ -33,28 +35,15 @@ public class TransactionController {
             request.getTargetAccountId(),
             request.getAmount()
         );
-        return ResponseEntity.ok(toResponse(transaction));
+        return ResponseEntity.ok(transactionMapper.toResponse(transaction));
     }
 
     @GetMapping ("/{accountId}/transactions")
     public ResponseEntity<List<TransactionResponse>> getTransactionsForAccount(@PathVariable Long accountId) {
         List<TransactionResponse> transactions = transactionQueryService.getByAccountId(accountId)
             .stream()
-            .map(this::toResponse)
+            .map(transactionMapper::toResponse)
             .toList();
         return ResponseEntity.ok(transactions);
-    }
-
-    private TransactionResponse toResponse(Transaction transaction) {
-        TransactionResponse response = new TransactionResponse();
-        response.setId(transaction.getId());
-        response.setType(transaction.getType());
-        response.setSourceAccountId(transaction.getSourceAccountId());
-        response.setTargetAccountId(transaction.getTargetAccountId());
-        response.setAmount(transaction.getAmount());
-        response.setFee(transaction.getFee());
-        response.setStatus(transaction.getStatus());
-        response.setCreateAt(transaction.getCreateAt());
-        return response;
     }
 }
