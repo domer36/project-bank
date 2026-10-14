@@ -17,6 +17,7 @@ import com.dotcomits.atlas_bank.account.dto.CreateAccountRequest;
 import com.dotcomits.atlas_bank.account.model.Account;
 import com.dotcomits.atlas_bank.account.service.IAccountService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController 
@@ -28,7 +29,7 @@ public class AccountController {
     private final AccountMapper accountMapper;
 
     @PostMapping 
-    public ResponseEntity<AccountResponse> create(@RequestBody CreateAccountRequest request) {
+    public ResponseEntity<AccountResponse> create(@Valid @RequestBody CreateAccountRequest request) {
         Account account = accountMapper.toEntity(request);
 
         Account createdAccount = accountService.create(account);

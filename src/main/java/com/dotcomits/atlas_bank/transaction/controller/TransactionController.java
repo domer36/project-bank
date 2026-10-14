@@ -17,6 +17,7 @@ import com.dotcomits.atlas_bank.transaction.model.Transaction;
 import com.dotcomits.atlas_bank.transaction.service.ITransactionQueryService;
 import com.dotcomits.atlas_bank.transaction.service.ITransferService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController 
@@ -29,7 +30,7 @@ public class TransactionController {
     private final TransactionMapper transactionMapper;
 
     @PostMapping ("/transfer") 
-    public ResponseEntity<TransactionResponse> transfer(@RequestBody TransactionRequest request) {
+    public ResponseEntity<TransactionResponse> transfer(@Valid @RequestBody TransactionRequest request) {
         Transaction transaction = transferService.execute(
             request.getSourceAccountId(),
             request.getTargetAccountId(),
