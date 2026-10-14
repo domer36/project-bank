@@ -1,5 +1,6 @@
 package com.dotcomits.atlas_bank.shared.exception;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -48,12 +49,16 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Validation Error");
 
-        List<String> errors = ex.getBindingResult()
+        List<String> errors = new ArrayList<>();
+
+        ex.getBindingResult()
             .getFieldErrors()
-            .stream()
-            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .toList();
+            .forEach(error -> errors.add(error.getField() + ": " + error.getDefaultMessage()));
         problemDetail.setProperty("errors", errors);
+
+        ex.getBindingResult()
+            .getGlobalErrors()
+            .forEach(error -> errors.add(error.getObjectName() + ": " + error.getDefaultMessage()));
         return problemDetail;
     }
 }
