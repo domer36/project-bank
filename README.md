@@ -1,22 +1,23 @@
 # Atlas Bank
 
-Proyecto base de una API REST para gestión de cuentas bancarias, desarrollado con Java y Spring Boot.
+API REST bancaria construida con Java 21 y Spring Boot 4 para gestionar cuentas y transferencias entre cuentas.
 
 ## Descripción
 
-Atlas Bank es una aplicación backend que permite registrar y consultar cuentas bancarias. Actualmente incluye la estructura inicial del proyecto con persistencia, capa de servicio y endpoints REST para manejar cuentas.
+Atlas Bank es un backend de ejemplo para una solución bancaria simple. El proyecto incluye operaciones para crear cuentas, consultar su información, registrar movimientos y ejecutar transferencias con validaciones de negocio como saldo insuficiente y cuentas inactivas.
 
-## Tecnologías
+## Stack tecnológico
 
 - Java 21
 - Spring Boot 4.0.8
 - Spring Web MVC
 - Spring Data JPA
-- H2 Database
-- Maven
+- Hibernate / H2
+- Maven Wrapper
 - Lombok
+- MapStruct
 
-## Estructura principal
+## Estructura del proyecto
 
 ```text
 src/
@@ -24,36 +25,54 @@ src/
 │   ├── java/
 │   │   └── com/dotcomits/atlas_bank/
 │   │       ├── AtlasBankApplication.java
-│   │       ├── controller/
-│   │       │   └── AccountController.java
-│   │       ├── model/
-│   │       │   └── Account.java
-│   │       ├── repository/
-│   │       │   └── AccountRepository.java
-│   │       └── service/
-│   │           └── AccountService.java
+│   │       ├── account/
+│   │       │   ├── controller/
+│   │       │   ├── dto/
+│   │       │   ├── exception/
+│   │       │   ├── model/
+│   │       │   ├── repository/
+│   │       │   └── service/
+│   │       ├── shared/
+│   │       │   └── exception/
+│   │       └── transaction/
+│   │           ├── controller/
+│   │           ├── dto/
+│   │           ├── exception/
+│   │           ├── model/
+│   │           ├── repository/
+│   │           ├── service/
+│   │           └── validation/
 │   └── resources/
 │       └── application.properties
-└── test/
-    └── java/
-        └── com/dotcomits/atlas_bank/
+├── test/
+│   └── java/
+│       └── com/dotcomits/atlas_bank/
+└── pom.xml
 ```
 
 ## Funcionalidades actuales
 
-- Crear una cuenta bancaria
-- Listar todas las cuentas
-- Consultar una cuenta por su ID
-- Persistencia con base de datos en memoria H2
-- Acceso a la consola H2 para consultas rápidas
+- Registro y consulta de cuentas bancarias
+- Almacenamiento persistente en base de datos H2 en memoria
+- Transferencias entre cuentas
+- Validación de cuenta activa
+- Validación de saldo disponible
+- Registro de movimientos/transacciones con cálculo de comisiones por tipo de cuenta
+- Manejo centralizado de errores con `@RestControllerAdvice`
+- Acceso a consola H2 para consultar datos de prueba
 
 ## Endpoints disponibles
 
 ### Cuentas
 
-- `POST /api/accounts` - Crear una cuenta
-- `GET /api/accounts` - Obtener todas las cuentas
-- `GET /api/accounts/{id}` - Obtener una cuenta por ID
+- `POST /api/v1/accounts` - Crear una cuenta
+- `GET /api/v1/accounts` - Listar todas las cuentas
+- `GET /api/v1/accounts/{id}` - Consultar una cuenta por ID
+
+### Transferencias
+
+- `POST /api/v1/transactions/transfer` - Transferir saldo entre dos cuentas
+- `GET /api/v1/transactions/{accountId}/transactions` - Obtener historial de transacciones de una cuenta
 
 ### Consola H2
 
@@ -61,14 +80,26 @@ src/
 
 ## Configuración
 
-La aplicación usa H2 en memoria configurado en:
+La aplicación usa H2 en memoria con las siguientes configuraciones por defecto:
 
 ```properties
+spring.application.name=atlas-bank
 spring.datasource.url=jdbc:h2:mem:atlasbank
+spring.datasource.driver-class-name=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=sa
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
 server.port=8080
 ```
+
+## Requisitos
+
+- JDK 21+
+- Maven 3.9+ o wrapper incluido (`./mvnw`)
 
 ## Ejecutar el proyecto
 
@@ -78,12 +109,12 @@ Desde la raíz del proyecto:
 ./mvnw spring-boot:run
 ```
 
-O usando Maven:
+O con Maven:
 
 ```bash
 mvn spring-boot:run
 ```
 
-## Estado
+## Estado actual
 
-Proyecto en desarrollo inicial con la base de la API funcionando y preparada para seguir agregando más funcionalidades bancarias.
+El proyecto ya incluye la base funcional de una API bancaria con manejo de cuentas y transferencias, validaciones de negocio y persistencia H2. Está preparado para continuar con nuevas reglas bancarias, más servicios y pruebas automatizadas.
