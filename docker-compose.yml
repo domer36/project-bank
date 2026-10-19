@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: atlas_bank_user
-      POSTGRES_PASSWORD: atlas_bank_password
-      POSTGRES_DB: atlas_bank_db
-    ports:
-      - "5432:5432"
